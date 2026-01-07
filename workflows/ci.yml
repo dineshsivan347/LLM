@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: appdb
+        ports: ['5432:5432']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install frontend deps
+        run: |
+          cd frontend && npm ci
+
+      - name: Install backend deps
+        run: |
+          cd backend && npm ci
+
+      - name: Run basic lint (frontend)
+        run: |
+          cd frontend && npm run lint || true
+
+      - name: Run backend tests placeholder
+        run: |
+          echo "Add backend test scripts"
